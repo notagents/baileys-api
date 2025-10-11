@@ -15,15 +15,17 @@ export function emitEvent(
 	status: "success" | "error" = "success",
 	message?: string,
 ) {
+	// Always try to send webhook if enabled
 	if (env.ENABLE_WEBHOOK && event === "messages.upsert") {
 		sendWebhook(event, sessionId, data, status, message);
 	}
 
-	if (!socketServer) {
+	// Only emit to socket if socket server is available
+	if (socketServer) {
+		socketServer.emitEvent(event, sessionId, { status, message, data });
+	} else if (env.ENABLE_WEBSOCKET) {
 		console.error("Socket server not initialized. Call initializeSocketEmitter first.");
-		return;
 	}
-	socketServer.emitEvent(event, sessionId, { status, message, data });
 }
 
 export async function sendWebhook(
