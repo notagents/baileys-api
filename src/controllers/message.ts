@@ -189,8 +189,15 @@ export const deleteMessageForMe: RequestHandler = async (req, res) => {
 		const exists = await WhatsappService.jidExists(session, jid, type);
 		if (!exists) return res.status(400).json({ error: "JID does not exists" });
 
-		const result = await session.chatModify({ clear: { messages: [message] } as any }, jid);
+		const result = await prisma.message.deleteMany({
+			where: {
+				sessionId,
+				id: message.id,
+				remoteJid: message.remoteJid || jid,
+			},
+		});
 
+		emitEvent("messages.delete", sessionId, { message: result });
 		res.status(200).json(result);
 	} catch (e) {
 		const message = "An error occured during message delete";

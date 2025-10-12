@@ -2,6 +2,7 @@ import makeWASocket, {
 	DisconnectReason,
 	isJidBroadcast,
 	makeCacheableSignalKeyStore,
+	fetchLatestBaileysVersion,
 } from "baileys";
 import type { ConnectionState, SocketConfig, WASocket, proto } from "baileys";
 import { Store, useSession } from "./store";
@@ -187,16 +188,16 @@ class WhatsappService {
 			? handleSSEConnectionUpdate
 			: handleNormalConnectionUpdate;
 		const { state, saveCreds } = await useSession(sessionId);
+		const { version } = await fetchLatestBaileysVersion();
 		const socket = makeWASocket({
-			printQRInTerminal: true,
-			browser: [env.BOT_NAME || "Whatsapp Bot", "Chrome", "3.0"],
+			browser: [env.BOT_NAME || "WhatsApp Bot", "Chrome", "120.0.6099.109"],
 			generateHighQualityLinkPreview: true,
 			...socketConfig,
 			auth: {
 				creds: state.creds,
 				keys: makeCacheableSignalKeyStore(state.keys, logger),
 			},
-			version: [2, 3000, 1022822840],
+			version,
 			logger,
 			shouldIgnoreJid: (jid) => isJidBroadcast(jid),
 			getMessage: async (key) => {

@@ -1,0 +1,70 @@
+### DELETE SESSION
+DELETE http://localhost:3000/sessions/gonzaloSession
+X-API-Key: gonzaloizquierdo
+Content-Type: application/json
+
+### POST create new session
+POST http://localhost:3000/sessions/add
+X-API-Key: gonzaloizquierdo
+Content-Type: application/json
+
+{
+  "sessionId": "gonzaloSession",
+  "readIncomingMessages": false
+}
+
+### POST create new session remote
+POST https://baileys-api-baileys.b46ijo.easypanel.host/sessions/add
+X-API-Key: gonzalo
+Content-Type: application/json
+
+{
+  "sessionId": "gonzaloSession",
+  "readIncomingMessages": false
+}
+
+
+### GET
+
+GET https://baileys-api-baileys.b46ijo.easypanel.host/sessions
+X-API-Key: gonzalo
+
+
+### GET
+GET http://localhost:3000/sessions
+X-API-Key: gonzaloizquierdo
+
+### GET
+GET http://localhost:3000/gonzaloSession/contacts
+X-API-Key: gonzaloizquierdo
+
+### POST MENSAJE A TOMI C
+POST http://localhost:3000/gonzaloSession/messages/send
+X-API-Key: gonzaloizquierdo
+Content-Type: application/json
+
+{
+    "jid": "5491130245719@s.whatsapp.net",
+    "type": "number",
+    "message": {
+        "text": "Esto si es un mensaje escrito por un bot."
+    }
+}
+
+### POST MENSAJE A PANCHI
+POST http://localhost:3000/gonzaloSession/messages/send
+X-API-Key: gonzaloizquierdo
+Content-Type: application/json
+
+{
+    "jid": "5492972508940@s.whatsapp.net",
+    "type": "number",
+    "message": {
+        "text": "No te asustes, pero esto es un mensaje enviado por API jeje"
+    }
+}
+
+
+
+
+
