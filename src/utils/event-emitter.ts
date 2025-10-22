@@ -16,7 +16,7 @@ export function emitEvent(
 	message?: string,
 ) {
 	// Always try to send webhook if enabled
-	if (env.ENABLE_WEBHOOK && event === "messages.upsert") {
+	if (env.ENABLE_WEBHOOK && event === "messages.upsert" && status === "success") {
 		sendWebhook(event, sessionId, data, status, message);
 	}
 
