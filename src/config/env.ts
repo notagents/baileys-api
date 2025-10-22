@@ -18,6 +18,7 @@ interface CustomProcessEnv {
 	SSE_MAX_QR_GENERATION?: number;
 	SESSION_CONFIG_ID?: string;
 	API_KEY?: string;
+	VALIDATE_COUNTRY_CODE?: boolean;
 }
 
 const envSchema = z
@@ -35,6 +36,7 @@ const envSchema = z
 		SSE_MAX_QR_GENERATION: z.number().default(5),
 		SESSION_CONFIG_ID: z.string().optional().default("session-config"),
 		API_KEY: z.string(),
+		VALIDATE_COUNTRY_CODE: z.boolean().default(false),
 	})
 	.superRefine((data, ctx) => {
 		if (data.ENABLE_WEBHOOK && !data.URL_WEBHOOK) {
@@ -52,6 +54,7 @@ const processEnv: Partial<CustomProcessEnv> = {
 	URL_WEBHOOK: process.env.URL_WEBHOOK,
 	ENABLE_WEBHOOK: process.env.ENABLE_WEBHOOK === "true",
 	ENABLE_WEBSOCKET: process.env.ENABLE_WEBSOCKET === "true",
+	VALIDATE_COUNTRY_CODE: process.env.VALIDATE_COUNTRY_CODE === "true",
 	BOT_NAME: process.env.BOT_NAME,
 	DATABASE_URL: process.env.DATABASE_URL,
 	LOG_LEVEL: process.env.LOG_LEVEL as LogLevel,

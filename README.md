@@ -92,6 +92,9 @@ SESSION_CONFIG_ID="session-config"
 
 # API Key (for Authorization Header and Socket.io Token)
 API_KEY="a6bc226axxxxxxxxxxxxxx"
+
+# Validate Country Code for Webhook Events (only emit events from same country code)
+VALIDATE_COUNTRY_CODE="false"
 ```
 
 ## Usage

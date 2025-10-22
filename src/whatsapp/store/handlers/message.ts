@@ -1,9 +1,11 @@
 import type { BaileysEventEmitter, MessageUserReceipt, proto, WAMessageKey } from "baileys";
 import { jidNormalizedUser, toNumber } from "baileys";
 import type { BaileysEventHandler, MakeTransformedPrisma } from "@/types";
-import { transformPrisma, logger, emitEvent } from "@/utils";
+import { transformPrisma, logger, emitEvent, haveSameCountryCode } from "@/utils";
 import { prisma } from "@/config/database";
 import type { Message } from "@prisma/client";
+import WhatsappService from "@/whatsapp/service";
+import env from "@/config/env";
 
 const getKeyAuthor = (key: WAMessageKey | undefined | null) =>
 	(key?.fromMe ? "me" : key?.participant || key?.remoteJid) || "";
@@ -67,7 +69,19 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 								},
 							},
 						});
-						emitEvent("messages.upsert", sessionId, { messages: data });
+
+						// Emit webhook event based on VALIDATE_COUNTRY_CODE setting
+						if (!env.VALIDATE_COUNTRY_CODE) {
+							// When validation is disabled, emit all messages
+							emitEvent("messages.upsert", sessionId, { messages: data });
+						} else {
+							// When validation is enabled, only emit if sender and receiver have the same country code
+							const session = WhatsappService.getSession(sessionId);
+							const receiverJid = session?.user?.id;
+							if (receiverJid && haveSameCountryCode(jid, receiverJid)) {
+								emitEvent("messages.upsert", sessionId, { messages: data });
+							}
+						}
 
 						const chatExists =
 							(await prisma.chat.count({ where: { id: jid, sessionId } })) > 0;
