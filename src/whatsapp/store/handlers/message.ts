@@ -49,7 +49,10 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 			case "notify":
 				for (const message of messages) {
 					try {
-						const jid = jidNormalizedUser(message.key.remoteJid!);
+						// For LID users, use senderPn if available, otherwise normalize remoteJid
+						const jid = message.key.senderPn
+							? jidNormalizedUser(message.key.senderPn)
+							: jidNormalizedUser(message.key.remoteJid!);
 						const data = transformPrisma(message) as MakeTransformedPrisma<Message>;
 
 						await model.upsert({
@@ -88,7 +91,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 						if (type === "notify" && !chatExists) {
 							event.emit("chats.upsert", [
 								{
-									id: jid,
+									id: jid, // Already normalized above
 									conversationTimestamp: toNumber(message.messageTimestamp),
 									unreadCount: 1,
 								},
