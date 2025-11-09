@@ -1,6 +1,7 @@
 import makeWASocket, {
 	DisconnectReason,
 	isJidBroadcast,
+	jidNormalizedUser,
 	makeCacheableSignalKeyStore,
 	fetchLatestBaileysVersion,
 } from "baileys";
@@ -202,7 +203,7 @@ class WhatsappService {
 			shouldIgnoreJid: (jid) => isJidBroadcast(jid),
 			getMessage: async (key) => {
 				const data = await prisma.message.findFirst({
-					where: { remoteJid: key.remoteJid!, id: key.id!, sessionId },
+					where: { remoteJid: jidNormalizedUser(key.remoteJid!), id: key.id!, sessionId },
 				});
 				return (data?.message || undefined) as proto.IMessage | undefined;
 			},

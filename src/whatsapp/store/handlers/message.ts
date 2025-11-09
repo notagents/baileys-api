@@ -49,10 +49,12 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 			case "notify":
 				for (const message of messages) {
 					try {
-						// For LID users, use senderPn if available, otherwise normalize remoteJid
-						const jid = message.key.senderPn
-							? jidNormalizedUser(message.key.senderPn)
-							: jidNormalizedUser(message.key.remoteJid!);
+						// For incoming messages from LID users, use senderPn if available, otherwise normalize remoteJid
+						// For outgoing messages (fromMe=true), always use remoteJid
+						const jid =
+							!message.key.fromMe && message.key.senderPn
+								? jidNormalizedUser(message.key.senderPn)
+								: jidNormalizedUser(message.key.remoteJid!);
 						const data = transformPrisma(message) as MakeTransformedPrisma<Message>;
 
 						await model.upsert({
